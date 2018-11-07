@@ -13,7 +13,7 @@ class key(models.Model):
     created_date = models.DateTimeField(
             default=timezone.now)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
-    created_for = models.ForeignKey('tenant', on_delete=models.CASCADE, editable=False) #gibt an, zu welchem Mieter ein Key gehört
+    created_for = models.ForeignKey('tenant', on_delete=models.CASCADE, editable=False, null=True) #gibt an, zu welchem Mieter ein Key gehört
     valid_from = models.DateTimeField(
             blank=True, null=True)
     valid_to = models.DateTimeField(
@@ -48,3 +48,7 @@ class keyType(models.Model):
 
     def __str__(self):
         return self.description + "  (" + self.id + ")"
+
+
+class tenant(models.Model):
+    tenant = models.ForeignKey('keyType', on_delete=models.CASCADE, editable=False)

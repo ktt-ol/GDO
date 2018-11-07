@@ -1,0 +1,69 @@
+/*scss-File für Zugangsverwaltung Bahnhofsplatz 10*/
+
+/*
+  Farbenconfig
+ */
+
+$primaryColor:  #ff7b00;
+$fontFamily: 'Source Sans Pro', sans-serif;
+
+
+/*
+  Globale Styles
+  Überschriften etc...
+ */
+
+h1, h2, h3, h4, h5, h6, p, a, span {
+  font-family: $fontFamily;
+}
+
+p, a, span {
+  color: #000;
+}
+
+a, a:hover {
+  text-decoration: none;
+  color: #000;
+
+}
+
+
+/******************************/
+/*** Header Styles          ***/
+/******************************/
+#header {
+  position: fixed;
+  height: 65px;
+  background: $primaryColor;
+  width: 100%;
+  z-index: 1000;
+
+  h1 {
+    margin-top: 10px;
+  }
+}
+
+
+/******************************/
+/*** Content Styles         ***/
+/******************************/
+#content {
+  width: 100%;
+  position: relative;
+}
+
+/******************************/
+/*** Footer Styles          ***/
+/******************************/
+
+#footer {
+  width: 100%;
+  position: absolute;
+  margin-top: 65px;
+
+  span.footer-text {
+    font-size: 12px;
+    font-family: $fontFamily;
+    float: right;
+  }
+}
