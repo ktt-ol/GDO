@@ -1,6 +1,29 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}"/>
-        <link rel="stylesheet" href="{% static 'css/custom.css' %}"/>
+        {% block header-top %}
+            {% include "keys/header-top.html" %}
+        {% endblock %}
+        <title>Login Keyverwaltung</title>
     </head>
+    <body>
+        <div id="header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1>Login</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="content">
+
+        </div>
+        <div id="footer">
+            {% block footer %}
+                {% include "keys/footer.html" %}
+            {% endblock %}
+        </div>
+    </body>
 </html>
+
