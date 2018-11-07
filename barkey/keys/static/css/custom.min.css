@@ -1,0 +1,1 @@
+@charset "UTF-8";h1,h2,h3,h4,h5,h6,p,a,span{font-family:"Source Sans Pro",sans-serif}#header{position:fixed;height:65px;background:#ff7b00;width:100%;z-index:1000}#header h1{margin-top:10px}#content{width:100%;position:relative}#footer{width:100%;position:absolute;margin-top:65px}#footer span.footer-text{font-size:12px;font-family:"Source Sans Pro",sans-serif;float:right}
