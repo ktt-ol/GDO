@@ -7,7 +7,7 @@ import uuid
 
 class key(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={'key_type': 'G'})
     key_type = models.ForeignKey('keyType', on_delete=models.CASCADE) #S = Single-Use, G = Gruppe, M = Mieter, C = Standard-Code
     description = models.CharField(max_length=64, null=True) #Beschreibung des Keys / der Gruppe
     created_date = models.DateTimeField(
@@ -22,15 +22,20 @@ class key(models.Model):
             blank=True, null=True, editable=False) #Wird gesetzt, wenn ein Single-Use Code das erste mal genutzt wird
     valid_for = models.DateTimeField(
             blank=True, null=True) #wird beim erstellen eines Single-Use Codes genutzt
-    active = models.BooleanField()
-    deleted = models.BooleanField()
+    active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False, editable=False)
 
 
     def save(self):
-        if str(self.valid_to) == "None":
-            self.valid_to = datetime(2999, 12, 31, 23, 59)
+        if self.parent == None:
+            parent = key.objects.get(description='KtT')
+            self.parent = parent
+            print(parent.id)
         super(key, self).save()
 
+    def delete(self):
+        self.deleted = True
+        self.save()
 
     def __str__(self):
         if not str(self.parent) == "None":
@@ -51,4 +56,5 @@ class keyType(models.Model):
 
 
 class tenant(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     tenant = models.ForeignKey('keyType', on_delete=models.CASCADE, editable=False)
