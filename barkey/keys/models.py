@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from datetime import datetime
+from datetime import timedelta
 import uuid
 
 
@@ -19,12 +20,11 @@ class key(models.Model):
     valid_to = models.DateTimeField(
             blank=True, null=True)
     first_used = models.DateTimeField(
-            blank=True, null=True, editable=False) #Wird gesetzt, wenn ein Single-Use Code das erste mal genutzt wird
-    valid_for = models.DateTimeField(
-            blank=True, null=True) #wird beim erstellen eines Single-Use Codes genutzt
-    active = models.BooleanField(default=True)
-    deleted = models.BooleanField(default=False, editable=False)
-
+            blank=True, null=True, editable=False) #Wird gesetzt, wenn ein Single-Use Code das erste mal genutzt wird DEPRECATED
+    valid_for = models.IntegerField(
+            blank=True, null=True) #wird beim erstellen eines Single-Use Codes genutzt, duration, int
+    active = models.BooleanField()
+    deleted = models.BooleanField()
 
     def save(self):
         if self.parent == None:
@@ -38,11 +38,52 @@ class key(models.Model):
         self.save()
 
     def __str__(self):
-        if not str(self.parent) == "None":
+        if self.parent is not None:
             return self.description + ", Parent: " + str(self.parent)
         else:
             return self.description
 
+    def is_valid(self):
+        if not self._is_active() and not self._is_valid_to_date() and not self._is_valid_from_date():
+            return False
+        else:
+            return True
+
+    def _is_valid_to_date(self):
+        if self.valid_to > datetime.now or self.valid_to is None:
+            if self.parent is not None and self.valid_to is None:
+                return self.parent._is_valid_to_date()
+            elif self.parent is None or self.valid_to > datetime.now:
+                return True
+        else:
+            return False
+
+    def _is_valid_from_date(self):
+        if self.valid_from < datetime.now or self.valid_from is None:
+            if self.parent is not None and self.valid_from is None:
+                return self.parent._is_valid_from_date()
+            elif self.parent is None or self.valid_from < datetime.now:
+                return True
+        else:
+            return False
+
+    def _is_active(self):
+        if self.active:
+            if self.parent is None:
+                return True
+            else:
+                self.parent._is_active()
+        else:
+            return False
+
+    def set_valid_to(self, value):
+        if self.valid_to is None or self.valid_to > datetime.now + self._duration(value):
+            self.valid_to = datetime.now + self._duration(value)
+        #todo: Logeintrag bei _nicht_ gesetztem Wert, howto?
+
+
+    def _duration(self, value):
+        return timedelta(hours = value)
 
 class keyType(models.Model):
     id = models.CharField(primary_key=True, max_length=1) #S = Single-Use, G = Gruppe, M = Mieter, C = Standard-Code
