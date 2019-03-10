@@ -49,7 +49,7 @@ class key(models.Model):
         return self.description
 
     def is_valid(self):
-        if not self._is_active() and not self._is_valid_to_date() and not self._is_valid_from_date():
+        if not self._is_active() and not self._is_deleted() and not self._is_valid_to_date() and not self._is_valid_from_date():
             return False
         else:
             return True
@@ -78,6 +78,15 @@ class key(models.Model):
                 return True
             else:
                 self.parent._is_active()
+        else:
+            return False
+
+    def _is_deleted(self):
+        if self.deleted:
+            if self.parent is None:
+                return True
+            else:
+                self.parent._is_deleted()
         else:
             return False
 
