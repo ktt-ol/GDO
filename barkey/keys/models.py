@@ -102,5 +102,5 @@ class keyType(models.Model):
 
 
 class tenant(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    tenant = models.ForeignKey('keyType', on_delete=models.CASCADE, editable=False)
+    #id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    tenant = models.CharField(max_length=64, null=True) #Beschreibung des Mieters

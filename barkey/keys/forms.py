@@ -1,5 +1,5 @@
 from django import forms
-from .models import key
+from .models import *
 
 
 class keyForm(forms.ModelForm):

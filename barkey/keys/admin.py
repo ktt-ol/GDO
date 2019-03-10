@@ -1,10 +1,27 @@
 from django.contrib import admin
-from .models import key
-from .models import keyType
+from .models import *
 
 # Register your models here.
-class key_admin(admin.ModelAdmin):
-    list_display = ('description', 'parent', 'key_type', 'active', 'deleted', 'id')
+class key_user(admin.ModelAdmin):
 
-admin.site.register(key, key_admin)
+    def get_list_display(self, request):
+        if request.user.is_superuser:
+            list_display = ('description', 'parent', 'key_type', 'active', 'deleted', 'id')
+        else:
+            list_display = ('description', 'parent', 'key_type', 'active')
+        return list_display
+
+    def get_queryset(self, request):
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(deleted=False)
+
+    def delete_queryset(self, request, queryset):
+        for model in queryset:
+            model.delete()
+
+
+admin.site.register(key, key_user)
 admin.site.register(keyType)
+admin.site.register(tenant)
