@@ -27,7 +27,7 @@ class key(models.Model):
     deleted = models.BooleanField()
 
     def save(self):
-        if self.parent == None:
+        if self.parent == None and not self.key_type == keyType.objects.get(id='M'):
             parent = key.objects.get(description='KtT')
             self.parent = parent
             print(parent.id)
@@ -37,11 +37,16 @@ class key(models.Model):
         self.deleted = True
         self.save()
 
+        children = key.objects.filter(parent=self)
+        print(children)
+
+        for child in key.objects.filter(parent=self):
+            if child.parent is not None:
+                child.delete()
+        print("FCKU")
+
     def __str__(self):
-        if self.parent is not None:
-            return self.description + ", Parent: " + str(self.parent)
-        else:
-            return self.description
+        return self.description
 
     def is_valid(self):
         if not self._is_active() and not self._is_valid_to_date() and not self._is_valid_from_date():
