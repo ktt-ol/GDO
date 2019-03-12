@@ -15,10 +15,11 @@ def check_key(request, selectedid):
     answer = False
     try:
         barcode = key.objects.get(key_value=selectedid)
-        if barcode is not None and key.is_valid(barcode):
-            answer = True
-        else:
-            answer = False
     except:
         answer = 'you failed!'
+
+    if barcode is not None and key.is_valid(barcode):
+        answer = True
+    else:
+        answer = False
     return render(request, 'keys/check_key.html', {'x': x, 'answer': answer})

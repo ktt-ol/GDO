@@ -48,11 +48,21 @@ class key(models.Model):
     def __str__(self):
         return self.description
 
+
+
     def is_valid(self):
-        if not self._is_active() and not self._is_deleted() and not self._is_valid_to_date() and not self._is_valid_from_date() and self._is_valid_group():
-            return False
-        else:
-            return True
+        if self._is_valid_group():
+            #print("Is valid Group")
+            if self._is_active() == True:
+                #print("Is Active")
+                if not self._is_deleted():
+                    #print("Is not Deleted")
+                    if self._is_valid_to_date():
+                        #print("Is valid to")
+                        if self._is_valid_from_date():
+                            #print("Is valid from")
+                            return True
+        return False
 
     def _is_valid_group(self):
         if self.key_type.id == "S" or self.key_type.id == "C":
@@ -62,7 +72,7 @@ class key(models.Model):
             return False
 
     def _is_valid_to_date(self):
-        if self.valid_to > datetime.now or self.valid_to is None:
+        if self.valid_to is None or self.valid_to > datetime.now:
             if self.parent is not None and self.valid_to is None:
                 return self.parent._is_valid_to_date()
             elif self.parent is None or self.valid_to > datetime.now:
@@ -71,7 +81,7 @@ class key(models.Model):
             return False
 
     def _is_valid_from_date(self):
-        if self.valid_from < datetime.now or self.valid_from is None:
+        if self.valid_from is None or self.valid_from < datetime.now:
             if self.parent is not None and self.valid_from is None:
                 return self.parent._is_valid_from_date()
             elif self.parent is None or self.valid_from < datetime.now:
@@ -84,7 +94,7 @@ class key(models.Model):
             if self.parent is None:
                 return True
             else:
-                self.parent._is_active()
+                return self.parent._is_active()
         else:
             return False
 
