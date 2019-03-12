@@ -1,19 +1,20 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import User
 from datetime import datetime
 from datetime import timedelta
 import uuid
 
 
 class key(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    description = models.CharField(max_length=64, null=True)  # Beschreibung des Keys / der Gruppe
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={'key_type': 'G'})
     key_type = models.ForeignKey('keyType', on_delete=models.CASCADE) #S = Single-Use, G = Gruppe, M = Mieter, C = Standard-Code
-    description = models.CharField(max_length=64, null=True) #Beschreibung des Keys / der Gruppe
+    key_value = models.UUIDField(primary_key=True, editable=False)
     created_date = models.DateTimeField(
-            default=timezone.now)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+            default=timezone.now, editable=False)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, editable=False, null=True)
     created_for = models.ForeignKey('tenant', on_delete=models.CASCADE, editable=False, null=True) #gibt an, zu welchem Mieter ein Key gehört
     valid_from = models.DateTimeField(
             blank=True, null=True)
@@ -23,14 +24,13 @@ class key(models.Model):
             blank=True, null=True, editable=False) #Wird gesetzt, wenn ein Single-Use Code das erste mal genutzt wird DEPRECATED
     valid_for = models.IntegerField(
             blank=True, null=True) #wird beim erstellen eines Single-Use Codes genutzt, duration, int
-    active = models.BooleanField()
-    deleted = models.BooleanField()
+    active = models.BooleanField(default=True)
+    deleted = models.BooleanField(default=False, editable=False)
 
     def save(self):
-        if self.parent == None and not self.key_type == keyType.objects.get(id='M'):
-            parent = key.objects.get(description='KtT')
-            self.parent = parent
-            print(parent.id)
+
+        self.key_value = uuid.uuid4()
+
         super(key, self).save()
 
     def delete(self):
@@ -113,3 +113,10 @@ class keyType(models.Model):
 class tenant(models.Model):
     #id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     tenant = models.CharField(max_length=64, null=True) #Beschreibung des Mieters
+
+    def __str__(self):
+        return self.tenant
+
+class manager(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenant', on_delete=models.CASCADE, editable=True) #gibt an, zu welchem Mieter ein user gehört
