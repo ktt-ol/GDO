@@ -29,7 +29,7 @@ class key_user(admin.ModelAdmin):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(deleted=False)
+        return qs.filter(deleted=False, created_for=request.user.manager.tenant)
 
     def delete_queryset(self, request, queryset):
         for model in queryset:
