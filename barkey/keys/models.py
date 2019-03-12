@@ -55,7 +55,8 @@ class key(models.Model):
             return True
 
     def _is_valid_group(self):
-        if self.key_type == keyType.objects.get(id=['S', 'C']):
+        if self.key_type.id == "S" or self.key_type.id == "C":
+            print(keyType.id)
             return True
         else:
             return False

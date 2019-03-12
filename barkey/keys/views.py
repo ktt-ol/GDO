@@ -15,7 +15,7 @@ def check_key(request, selectedid):
     answer = False
     try:
         barcode = key.objects.get(key_value=selectedid)
-        if barcode is not None:
+        if barcode is not None and key.is_valid(barcode):
             answer = True
         else:
             answer = False
