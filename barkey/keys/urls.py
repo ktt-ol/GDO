@@ -16,7 +16,13 @@ Including another URLconf
 from django.urls import path
 from . import views
 
-urlpatterns = [
+from django.conf.urls import url
+
+urlpatterns = {
     path('', views.login, name='login'),
-    path('key-administration', views.key_admin, name='key_admin')
-]
+    path('key-administration', views.key_admin, name='key_admin'),
+    #path('check_key', views.check_key, name='check_key')
+    url(r'check_key/(?P<selectedid>[0-9a-z]{32})', views.check_key, name='check_key')
+}
+
+

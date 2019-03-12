@@ -49,10 +49,16 @@ class key(models.Model):
         return self.description
 
     def is_valid(self):
-        if not self._is_active() and not self._is_deleted() and not self._is_valid_to_date() and not self._is_valid_from_date():
+        if not self._is_active() and not self._is_deleted() and not self._is_valid_to_date() and not self._is_valid_from_date() and self._is_valid_group():
             return False
         else:
             return True
+
+    def _is_valid_group(self):
+        if self.key_type == keyType.objects.get(id=['S', 'C']):
+            return True
+        else:
+            return False
 
     def _is_valid_to_date(self):
         if self.valid_to > datetime.now or self.valid_to is None:
